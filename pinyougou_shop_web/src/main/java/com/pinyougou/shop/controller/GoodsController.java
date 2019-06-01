@@ -40,7 +40,9 @@ public class GoodsController {
 	 * @return
 	 */
 	@RequestMapping("/findPage")
-	public PageResult  findPage(int pageNo,int pageSize,@RequestBody TbGoods goods){			
+	public PageResult  findPage(int pageNo,int pageSize,@RequestBody TbGoods goods){
+		String sellerId = SecurityContextHolder.getContext().getAuthentication().getName();
+		goods.setSellerId(sellerId);
 		return goodsService.findPage(pageNo, pageSize,goods);
 	}
 	
@@ -61,31 +63,35 @@ public class GoodsController {
 			return new Result(false, "增加失败");
 		}
 	}
-	
 	/**
 	 * 修改
 	 * @param goods
 	 * @return
 	 */
 	@RequestMapping("/update")
-	public Result update(@RequestBody TbGoods goods){
+	public Result update(@RequestBody Goods goods){
 		try {
-
+			//拿到商品的商家ID和当前商家的ID对比,不一样不允许修改
+			Goods updateGoods = goodsService.getById(goods.getTbGoods().getId());
+			String sellerId = SecurityContextHolder.getContext().getAuthentication().getName();
+			if (!sellerId.equals(updateGoods.getTbGoods().getSellerId())){
+				return new  Result(false,"非法操作!不能修改其他商家的商品!");
+			}
 			goodsService.update(goods);
 			return new Result(true, "修改成功");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new Result(false, "修改失败");
 		}
-	}	
-	
+	}
+
 	/**
 	 * 获取实体
 	 * @param id
 	 * @return
 	 */
 	@RequestMapping("/getById")
-	public TbGoods getById(Long id){
+	public Goods getById(Long id){
 		return goodsService.getById(id);		
 	}
 	

@@ -27,7 +27,11 @@
 			//品牌列表
 			brandIds:[],
 			//[]规格列表
-			specIds:[]
+			specIds:[],
+			status:["未审核","审核通过","审核未通过","下架"],
+			//商品分类对象
+			itemCatMap: {"1":"手机"}
+
 		},
 		methods:{
 			//查询所有
@@ -48,13 +52,23 @@
 						app.pageNo = pageNo;  //更新当前页
 					});
 			},
+			//分页查询把分类ID转换成分类的名称
+			findItemCatName:function(){
+				axios.get("/itemCat/findAll.do?").then(function (resp) {
+					var tbItemCat=resp.data;
+					for (i=0;i<tbItemCat.length;i++){
+						// app.category.push(tbItemCat[i])
+						//$set(操作的变量名,修改的属性,修改的值)
+						app.$set(app.itemCatMap,tbItemCat[i].id,tbItemCat[i].name);
+					}
+				})
+			},
 			//让分页插件跳转到指定页
 			goPage:function (page) {
 				app.$children[0].goPage(page);
 			},
 			//新增
 			add:function () {
-				//this.entity.itemList = [];
 				this.entity.tbGoodsDesc.introduction =editor.html();
 				var url = "../goods/add.do";
 				if(this.entity.tbGoods.id != null){
@@ -68,13 +82,35 @@
 							itemList:[]}
 						editor.html("");
 					}
+					window.location.href="goods.html"
 				});
 			},
 			//跟据id查询
 			getById:function (id) {
-				axios.get("../goods/getById.do?id="+id).then(function (response) {
+				//获取url上的id
+				id = this.getUrlParam()["id"];
+				axios.get("/goods/getById.do?id="+id).then(function (response) {
 					app.entity = response.data;
+					editor.html(app.entity.tbGoodsDesc.introduction);
+					app.entity.tbGoodsDesc.itemImages=JSON.parse(app.entity.tbGoodsDesc.itemImages);
+					app.entity.tbGoodsDesc.customAttributeItems=JSON.parse(app.entity.tbGoodsDesc.customAttributeItems);
+					app.entity.tbGoodsDesc.specificationItems=JSON.parse(app.entity.tbGoodsDesc.specificationItems);
+					for (var i =0;i<app.entity.itemList.length;i++){
+						app.entity.itemList[i].spec=JSON.parse(app.entity.itemList[i].spec)
+					}
+
 				})
+			},
+			//规格回显判断
+			checkAttributeValue : function (specName,optionName){
+				var item =this.entity.tbGoodsDesc.specificationItems;
+				var obj=this.searchObjectByKey(item,"attributeName",specName);
+				if (obj != null){
+					if (obj.attributeValue.indexOf(optionName)>-1) {
+						return true;
+					}
+				} 
+				return false;
 			},
 			//批量删除数据
 			dele:function () {
@@ -132,12 +168,6 @@
 					}
 				})
 			},
-
-			// findBrandByTypetempalteId:function (typeTemplateId) {
-			// 	axios.get("/typeTemplate/getById.do?id="+typeTemplateId).then(function (resp) {
-			// 		app.brandIds = JSON.parse(resp.data.brandIds)
-			// 	})
-			// }
 			//商品录入的规格选择
 			searchObjectByKey:function(list,key,attributeName){
 				for(var i =0;i<list.length;i++){
@@ -189,14 +219,32 @@
 				for(var i=0;i<itemList.length;i++) {
 					for (var j = 0; j < attributeValue.length; j++) {
 						var addRow = JSON.parse(JSON.stringify(itemList[i]));
-						addRow.spec[attributeName] = attributeValue[j];
+						// addRow.spec[attributeName] = attributeValue[j];
+                        app.$set(addRow.spec,attributeName,attributeValue[j])
 						newList.push(addRow);
 					}
 				}
 				return newList;
+			},/**
+			 * 解析一个url中所有的参数
+			 * @return {参数名:参数值}
+			 */
+			getUrlParam:function(){
+				var paramMap={}
+				var url=document.location.toString();
+				var arrobj= url.split("?");
+				if (arrobj.length>0){
+					var argsArr = arrobj[1].split("&");
+					for (var i=0;i<argsArr.length;i++){
+						var lastArr = argsArr[i].split("=");
+						if (lastArr !=null){
+							// paramMap.put(lastArr[0],lastArr[1])
+							paramMap[lastArr[0]]=lastArr[1];
+						}
+					}
+				}
+				return paramMap;
 			}
-
-
 
 		},
 		watch:{
@@ -219,7 +267,11 @@
 					//查询模板信息
 					axios.get("/typeTemplate/getById.do?id="+newValue).then(function (response) {
 						app.brandIds = JSON.parse(response.data.brandIds);
-						app.entity.tbGoodsDesc.customAttributeItems = JSON.parse(response.data.customAttributeItems);
+						//回显与添加冲突,一个是typeTemplate里面的customAttributeItems,一个是tbgoodsdesc里面的
+						var id= app.getUrlParam()["id"];
+						if (id ==null){
+							app.entity.tbGoodsDesc.customAttributeItems = JSON.parse(response.data.customAttributeItems);
+						}
 
 					});
 					axios.get("/typeTemplate/findSpecList.do?id="+newValue).then(function (response) {
@@ -233,6 +285,9 @@
 			//调用用分页查询，初始化时从第1页开始查询
 			// this.findPage(1);
 			this.findItemCatByParentId(0,1);
-
+			this.findPage(1);
+			this.findItemCatName();
+			// this.getUrlParam();
+			this.getById(1);
 		}
 	});
