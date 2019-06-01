@@ -12,11 +12,16 @@ window.onload=function () {
 			//当前页
 			pageNo:1,
 			//声明对象
-			entity:{},
+			entity:{tbGoods:{typeTemplateId:0},
+				tbGoodsDesc:{itemImages:[],customAttributeItems:[],specificationItems:[]},
+				itemList:[]},
 			//将要删除的id列表
 			ids:[],
 			//搜索包装对象
-			searchEntity:{}
+			searchEntity:{auditStatus:'0'},
+			status:["未审核","审核通过","审核未通过","下架"],
+			//商品分类对象
+			itemCatMap: {"1":"手机"}
 		},
 		methods:{
 			//查询所有
@@ -36,6 +41,17 @@ window.onload=function () {
 						app.list = response.data.rows;  //数据列表
 						app.pageNo = pageNo;  //更新当前页
 					});
+			},
+			//分页查询把分类ID转换成分类的名称
+			findItemCatName:function(){
+				axios.get("/itemCat/findAll.do?").then(function (resp) {
+					var tbItemCat=resp.data;
+					for (i=0;i<tbItemCat.length;i++){
+						// app.category.push(tbItemCat[i])
+						//$set(操作的变量名,修改的属性,修改的值)
+						app.$set(app.itemCatMap,tbItemCat[i].id,tbItemCat[i].name);
+					}
+				})
 			},
 			//让分页插件跳转到指定页
 			goPage:function (page) {
@@ -75,12 +91,25 @@ window.onload=function () {
 						alert(response.data.message);
 					}
 				})
+			},
+			updateStatus:function (auditStatus) {
+				axios.get("/goods/updateStatus.do?ids="+this.ids+"&auditStatus="+auditStatus).then(function (response) {
+					if(response.data.success){
+						//刷新数据
+						app.findPage(app.pageNo);
+						app.ids = [];
+					}else{
+						alert(response.data.message);
+					}
+				})
 			}
 		},
 		//Vue对象初始化后，调用此逻辑
 		created:function () {
 			//调用用分页查询，初始化时从第1页开始查询
 			this.findPage(1);
+			this.findPage(1);
+			this.findItemCatName();
 		}
 	});
 }

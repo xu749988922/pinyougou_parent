@@ -30,7 +30,8 @@
 			specIds:[],
 			status:["未审核","审核通过","审核未通过","下架"],
 			//商品分类对象
-			itemCatMap: {"1":"手机"}
+			itemCatMap: {"1":"手机"},
+			mStatus:["已上架","已下架"]
 
 		},
 		methods:{
@@ -168,6 +169,13 @@
 					}
 				})
 			},
+			//商品的上下架
+			isMarketableStatus:function(id){
+				axios.get("/goods/isMarketableStatus.do?id="+id).then(function (resp) {
+					alert(resp.data.message);
+					window.location.href="goods.html"
+				})
+			},
 			//商品录入的规格选择
 			searchObjectByKey:function(list,key,attributeName){
 				for(var i =0;i<list.length;i++){
@@ -232,9 +240,9 @@
 			getUrlParam:function(){
 				var paramMap={}
 				var url=document.location.toString();
-				var arrobj= url.split("?");
-				if (arrobj.length>0){
-					var argsArr = arrobj[1].split("&");
+				var arrObj = url.split("?");
+				if (arrObj.length>1){
+					var argsArr = arrObj[1].split("&");
 					for (var i=0;i<argsArr.length;i++){
 						var lastArr = argsArr[i].split("=");
 						if (lastArr !=null){
@@ -269,7 +277,7 @@
 						app.brandIds = JSON.parse(response.data.brandIds);
 						//回显与添加冲突,一个是typeTemplate里面的customAttributeItems,一个是tbgoodsdesc里面的
 						var id= app.getUrlParam()["id"];
-						if (id ==null){
+						if (id == null){
 							app.entity.tbGoodsDesc.customAttributeItems = JSON.parse(response.data.customAttributeItems);
 						}
 

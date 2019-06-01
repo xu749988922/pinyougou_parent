@@ -110,5 +110,26 @@ public class GoodsController {
 			return new Result(false, "删除失败");
 		}
 	}
-	
+
+	/**
+	 * 商品上下架,0表示下架,1表示上架.注意:商品审核未通过时,不能进行此操作
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/isMarketableStatus")
+	public Result isMarketableStatus(Long id){
+		try {
+			Goods goods = goodsService.getById(id);
+			if (!"1".equals(goods.getTbGoods().getAuditStatus())){
+				return new Result(false, "商品未审核,不能进行上下架操作!");
+			}
+			goodsService.isMarketableStatus(id);
+			return new Result(true, "上下架操作成功");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Result(false, "上下架操作失败");
+		}
+	}
+
+
 }

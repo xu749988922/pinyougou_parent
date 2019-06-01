@@ -11,6 +11,7 @@ import com.pinyougou.pojogroup.Goods;
 import com.pinyougou.sellergoods.service.GoodsService;
 import entity.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -22,7 +23,8 @@ import java.util.Map;
  *
  * @author Steven
  */
-@Service
+@Service(interfaceClass = GoodsService.class)
+@Transactional
 public class GoodsServiceImpl implements GoodsService {
 
     @Autowired
@@ -53,6 +55,7 @@ public class GoodsServiceImpl implements GoodsService {
             //构建查询条件
             Example example = new Example(TbGoods.class);
             Example.Criteria criteria = example.createCriteria();
+            criteria.andIsNull("isDelete");
 
             if (goods != null) {
                 //如果字段不为空
@@ -118,6 +121,7 @@ public class GoodsServiceImpl implements GoodsService {
         goods.getTbGoods().setAuditStatus("0");
 //		保存商品的基本信息;注意状态要为0
         goodsMapper.insertSelective(goods.getTbGoods());
+        //int i= 1/0;
         goods.getTbGoodsDesc().setGoodsId(goods.getTbGoods().getId());
 //		保存商品的拓展信息,ID可以直接获取
         tbGoodsDescMapper.insertSelective(goods.getTbGoodsDesc());
@@ -226,9 +230,33 @@ public class GoodsServiceImpl implements GoodsService {
         Example example = new Example(TbGoods.class);
         Example.Criteria criteria = example.createCriteria();
         criteria.andIn("id", longs);
+        TbGoods tbGoods = new TbGoods();
+        tbGoods.setIsDelete("1");
 
         //跟据查询条件删除数据
-        goodsMapper.deleteByExample(example);
+        goodsMapper.updateByExampleSelective(tbGoods,example);
+    }
+
+    @Override
+    public void updateStatus(Long[] ids,String auditStatus) {
+        Example example = new Example(TbGoods.class);
+        Example.Criteria criteria = example.createCriteria();
+        List longs = Arrays.asList(ids);
+        criteria.andIn("id",longs);
+        TbGoods tbGoods = new TbGoods();
+        tbGoods.setAuditStatus(auditStatus);
+        goodsMapper.updateByExampleSelective(tbGoods,example);
+    }
+
+    @Override
+    public void isMarketableStatus(Long id) {
+        TbGoods tbGoods = goodsMapper.selectByPrimaryKey(id);
+        if ("0".equals(tbGoods.getIsMarketable())){
+            tbGoods.setIsMarketable("1");
+        }else {
+            tbGoods.setIsMarketable("0");
+        }
+        goodsMapper.updateByPrimaryKeySelective(tbGoods);
     }
 
 

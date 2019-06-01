@@ -12,6 +12,7 @@ import com.pinyougou.pojogroup.Specification;
 import com.pinyougou.sellergoods.service.SpecificationService;
 import entity.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,7 +22,8 @@ import java.util.List;
  * @author Steven
  *
  */
-@Service
+@Service(interfaceClass = SpecificationService.class)
+@Transactional
 public class SpecificationServiceImpl implements SpecificationService {
 
 	@Autowired

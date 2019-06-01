@@ -1,23 +1,26 @@
 package com.pinyougou.sellergoods.service.impl;
-import java.util.Arrays;
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import com.alibaba.dubbo.config.annotation.Service;
 import com.github.abel533.entity.Example;
-import com.github.pagehelper.PageInfo;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.pinyougou.mapper.TbOrderMapper;
 import com.pinyougou.pojo.TbOrder;
 import com.pinyougou.sellergoods.service.OrderService;
 import entity.PageResult;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 业务逻辑实现
  * @author Steven
  *
  */
-@Service
+@Service(interfaceClass = OrderService.class)
+@Transactional
 public class OrderServiceImpl implements OrderService {
 
 	@Autowired

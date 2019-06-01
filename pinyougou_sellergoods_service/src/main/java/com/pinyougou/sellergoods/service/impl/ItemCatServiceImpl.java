@@ -1,4 +1,5 @@
 package com.pinyougou.sellergoods.service.impl;
+
 import com.alibaba.dubbo.config.annotation.Service;
 import com.github.abel533.entity.Example;
 import com.github.pagehelper.PageHelper;
@@ -8,6 +9,7 @@ import com.pinyougou.pojo.TbItemCat;
 import com.pinyougou.sellergoods.service.ItemCatService;
 import entity.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +19,8 @@ import java.util.List;
  * @author Steven
  *
  */
-@Service
+@Service(interfaceClass = ItemCatService.class)
+@Transactional
 public class ItemCatServiceImpl implements ItemCatService {
 
 	@Autowired

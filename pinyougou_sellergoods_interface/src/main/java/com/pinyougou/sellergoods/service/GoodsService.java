@@ -52,5 +52,8 @@ public interface GoodsService {
 	 */
 	public void delete(Long [] ids);
 
-	
+
+    void updateStatus(Long[] ids,String auditStatus);
+
+	void isMarketableStatus(Long id);
 }
