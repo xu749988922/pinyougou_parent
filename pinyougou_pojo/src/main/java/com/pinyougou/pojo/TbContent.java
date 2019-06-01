@@ -1,7 +1,7 @@
 package com.pinyougou.pojo;
 
-import java.io.Serializable;
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Table(name = "tb_content")
 public class TbContent implements Serializable {
@@ -13,7 +13,7 @@ public class TbContent implements Serializable {
      * 内容类目ID
      */
     @Column(name = "category_id")
-    private Long categoryId;
+    private Integer categoryId;
 
     /**
      * 内容标题
@@ -57,21 +57,11 @@ public class TbContent implements Serializable {
         this.id = id;
     }
 
-    /**
-     * 获取内容类目ID
-     *
-     * @return category_id - 内容类目ID
-     */
-    public Long getCategoryId() {
+    public Integer getCategoryId() {
         return categoryId;
     }
 
-    /**
-     * 设置内容类目ID
-     *
-     * @param categoryId 内容类目ID
-     */
-    public void setCategoryId(Long categoryId) {
+    public void setCategoryId(Integer categoryId) {
         this.categoryId = categoryId;
     }
 
@@ -165,21 +155,5 @@ public class TbContent implements Serializable {
         this.sortOrder = sortOrder;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getClass().getSimpleName());
-        sb.append(" [");
-        sb.append("Hash = ").append(hashCode());
-        sb.append(", id=").append(id);
-        sb.append(", categoryId=").append(categoryId);
-        sb.append(", title=").append(title);
-        sb.append(", url=").append(url);
-        sb.append(", pic=").append(pic);
-        sb.append(", status=").append(status);
-        sb.append(", sortOrder=").append(sortOrder);
-        sb.append(", serialVersionUID=").append(serialVersionUID);
-        sb.append("]");
-        return sb.toString();
-    }
+
 }

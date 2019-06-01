@@ -8,11 +8,23 @@
         http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <dubbo:protocol name="dubbo" port="20881"></dubbo:protocol>
-    <dubbo:application name="pinyougou-sellergoods-service"/>
+    <mvc:annotation-driven>
+        <mvc:message-converters register-defaults="true">
+            <!--使用阿里巴巴的json解析产品，FastJson效率上会比之前学过的Jackson高一些 -->
+            <bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+                <property name="supportedMediaTypes" value="application/json"/>
+                <property name="features">
+                    <array>
+                        <value>WriteMapNullValue</value>
+                        <value>WriteDateUseDateFormat</value>
+                    </array>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+    <!-- 引用dubbo 服务 -->
+    <dubbo:application name="pinyougou_portal_web" />
     <dubbo:registry address="zookeeper://192.168.218.128:2181"/>
-    <dubbo:annotation package="com.pinyougou.sellergoods.service.impl" />
-    <!--全局参数配置,超时时间：5秒-->
-    <dubbo:provider timeout="5000" retries="0"/>
+    <dubbo:annotation package="com.pinyougou.portal.controller" />
 
 </beans>
