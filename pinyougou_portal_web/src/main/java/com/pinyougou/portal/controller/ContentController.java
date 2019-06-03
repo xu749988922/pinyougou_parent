@@ -109,4 +109,5 @@ public class ContentController {
 	public List<TbContent> findByCategoryId(Integer categoryId){
 		return contentService.findByCategoryId(categoryId);
 	}
+
 }

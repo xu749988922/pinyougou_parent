@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>pinyougou_parent</artifactId>
@@ -9,10 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>pinyougou_content_service</artifactId>
-    <packaging>war</packaging>
-
-    <name>pinyougou_content_service Maven Webapp</name>
+    <artifactId>pinyougou_es_util</artifactId>
     <dependencies>
         <!-- Spring -->
         <dependency>
@@ -94,7 +91,7 @@
         </dependency>
         <dependency>
             <groupId>com.pinyougou</groupId>
-            <artifactId>pinyougou_content_interface</artifactId>
+            <artifactId>pinyougou_pojo</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <!--es-->
@@ -139,17 +136,5 @@
             </exclusions>
         </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <!-- 配置Tomcat插件 -->
-            <plugin>
-                <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat7-maven-plugin</artifactId>
-                <configuration>
-                    <path>/</path>
-                    <port>82</port>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+
 </project>

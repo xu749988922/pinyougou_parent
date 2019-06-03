@@ -6,18 +6,24 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="mapper" />
         <module name="pinyougou_common" />
         <module name="pinyougou_content_interface" />
         <module name="pinyougou_content_service" />
         <module name="pinyougou_dao" />
+        <module name="pinyougou_es_util" />
         <module name="pinyougou_manager_web" />
         <module name="pinyougou_pojo" />
         <module name="pinyougou_portal_web" />
+        <module name="pinyougou_search_interface" />
+        <module name="pinyougou_search_service" />
+        <module name="pinyougou_search_web" />
         <module name="pinyougou_sellergoods_interface" />
         <module name="pinyougou_sellergoods_service" />
         <module name="pinyougou_shop_web" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="mapper" target="1.6" />
+    </bytecodeTargetLevel>
   </component>
 </project>
