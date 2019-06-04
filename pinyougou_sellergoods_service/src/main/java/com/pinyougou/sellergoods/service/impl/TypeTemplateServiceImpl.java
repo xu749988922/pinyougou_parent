@@ -1,18 +1,23 @@
 package com.pinyougou.sellergoods.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.github.abel533.entity.Example;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.pinyougou.mapper.TbSpecificationOptionMapper;
 import com.pinyougou.mapper.TbTypeTemplateMapper;
+import com.pinyougou.pojo.TbSpecificationOption;
 import com.pinyougou.pojo.TbTypeTemplate;
 import com.pinyougou.sellergoods.service.TypeTemplateService;
 import entity.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 业务逻辑实现
@@ -75,9 +80,33 @@ public class TypeTemplateServiceImpl implements TypeTemplateService {
         //获取总页数
         PageInfo<TbTypeTemplate> info = new PageInfo<TbTypeTemplate>(list);
         result.setPages((long)info.getPages());
-		
+		saveToRedis();
 		return result;
 	}
+	@Autowired
+	private RedisTemplate redisTemplate;
+	@Autowired
+	private TbSpecificationOptionMapper tbSpecificationOptionMapper;
+	//将数据保存到缓存
+	public void saveToRedis(){
+		List<TbTypeTemplate> list = this.findAll();
+		for (TbTypeTemplate template : list) {
+			List<Map> mapList = JSON.parseArray(template.getBrandIds(), Map.class);
+			redisTemplate.boundHashOps("brandList").put(template.getId(),mapList);
+
+			List<Map> specIds = JSON.parseArray(template.getSpecIds(), Map.class);
+			for (Map map : specIds) {
+				//查询选项列表
+				TbSpecificationOption where = new TbSpecificationOption();
+				where.setSpecId(new Long(map.get("id").toString()));
+				List<TbSpecificationOption> options = tbSpecificationOptionMapper.select(where);
+				//添加选项信息:[{id:1,text:规格名称,options:[选项1，2，3]}]
+				map.put("options", options);
+			}
+			redisTemplate.boundHashOps("specList").put(template.getId(),specIds);
+		}
+	}
+
 
 	/**
 	 * 增加
@@ -121,6 +150,6 @@ public class TypeTemplateServiceImpl implements TypeTemplateService {
         //跟据查询条件删除数据
         typeTemplateMapper.deleteByExample(example);
 	}
-	
-	
+
+
 }

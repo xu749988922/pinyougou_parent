@@ -9,6 +9,7 @@ import com.pinyougou.pojo.TbItemCat;
 import com.pinyougou.sellergoods.service.ItemCatService;
 import entity.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -22,6 +23,8 @@ import java.util.List;
 @Service(interfaceClass = ItemCatService.class)
 @Transactional
 public class ItemCatServiceImpl implements ItemCatService {
+	@Autowired
+	private RedisTemplate redisTemplate;
 
 	@Autowired
 	private TbItemCatMapper itemCatMapper;
@@ -57,6 +60,7 @@ public class ItemCatServiceImpl implements ItemCatService {
 
         //查询数据
         List<TbItemCat> list = itemCatMapper.selectByExample(example);
+
         //返回数据列表
         result.setRows(list);
 
@@ -132,6 +136,13 @@ public class ItemCatServiceImpl implements ItemCatService {
 		TbItemCat tbItemCat = new TbItemCat();
 		tbItemCat.setParentId((long)parentId);
 		List<TbItemCat> list = itemCatMapper.select(tbItemCat);
+		//将categoryId放入缓存中
+		//将商品分类数据放入缓存（Hash）。以分类名称作为key ,以模板ID作为值
+		//在这里写的原因是商品分类增删改都会经过这个方法,实时刷新缓存
+		List<TbItemCat> itemCats = this.findAll();
+		for (TbItemCat itemCat : itemCats) {
+			redisTemplate.boundHashOps("itemCat").put(itemCat.getName(),itemCat.getTypeId());
+		}
 		return list;
     }
 
