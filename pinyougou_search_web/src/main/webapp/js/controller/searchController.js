@@ -3,10 +3,14 @@ window.onload=function () {
         el:"#app",
         data:{
             //查询结果集
-            resultMap:{},
-            //搜索条件集{keyword:关键字}
-            searchMap:{keyword:'',category:'',brand:'',spec:{},price:'',pageNo:1,pageSize:20},
+            resultMap:{brandList:[]},
+            //搜索条件集{keywords: 关键字, category: 商品分类, brand: 品牌,
+//          spec: {'网络'：'移动4G','机身内存':'64G',price:价格区间,
+//          pageNo:当前页,pageSize:查询条数,sortField:排序域名,sort:排序方式asc|desc}
+            searchMap:{keyword:'',category:'',brand:'',spec:{},price:'',pageNo:1,pageSize:20,
+                sortField:'',sort:''},
             searchWord:'',
+            searchKeyword:'',
             //pageLable:[分页标签列表]
             pageLable:[],
             //标识分页插件中是否显示前面的省略号
@@ -45,7 +49,7 @@ window.onload=function () {
                 this.searchList();
             },
             textSearch:function () {
-                this.searchMap={keyword:'',category:'',brand:'',spec:{},price:'',pageNo:1,pageSize:20};
+                this.searchMap={keyword:'',category:'',brand:'',spec:{},price:'',pageNo:1,pageSize:20,sortField:'',sort:''};
                 // app.$set(this.searchMap,"keyword",this.searchWord);
                 this.searchMap.keyword =this.searchWord;
                 this.searchList();
@@ -96,11 +100,64 @@ window.onload=function () {
                 this.searchMap.pageNo = pageNo;
                 //刷新数据
                 this.searchList();
+            },
+            /**
+             * 排序查询
+             * @param sortField 排序域名
+             * @param sort 排序方式asc|desc
+             */
+            sortSearch:function(sortField,sort){
+                this.searchMap.sortField=sortField;
+                this.searchMap.sort=sort;
+                this.searchList();
+            },
+            keywordsIsBrand:function () {
+                for (var i = 0; i < this.resultMap.brandList.length; i++) {
+                    //如果包含品牌
+                    if (this.searchKeyword.indexOf(this.resultMap.brandList[i].text) > -1) {
+                        return true;
+                    }
+                }
+                return false;
+            },
+            getUrlParam:function() {
+                //url上的所有参数
+                var paramMap = {};
+                //获取当前页面的url
+                var url = document.location.toString();
+                //获取问号后面的参数
+                var arrObj = url.split("?");
+                //如果有参数
+                if (arrObj.length > 1) {
+                    //解析问号后的参数
+                    var arrParam = arrObj[1].split("&");
+                    //读取到的每一个参数,解析成数组
+                    var arr;
+                    for (var i = 0; i < arrParam.length; i++) {
+                        //以等于号解析参数：[0]是参数名，[1]是参数值
+                        arr = arrParam[i].split("=");
+                        if (arr != null) {
+                            paramMap[arr[0]] = arr[1];
+                        }
+                    }
+                }
+                return paramMap;
+            },
+            //加载查询字符串
+            loadkeywords:function () {
+                var urlParam = this.getUrlParam()["keyword"];
+                if(urlParam != null){
+                    //decodeURI-把url的中文转换回来
+                    this.searchMap.keyword=decodeURI(urlParam);
+                }
+                this.searchList();
             }
         },
         //初始化调用
         created:function () {
-            this.searchList();
+            // this.searchList();
+            //读取关键字查询
+            this.loadkeywords();
         }
     });
 }

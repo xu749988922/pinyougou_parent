@@ -259,5 +259,17 @@ public class GoodsServiceImpl implements GoodsService {
         goodsMapper.updateByPrimaryKeySelective(tbGoods);
     }
 
+    @Override
+    public List<TbItem> findItemListByGoodsIdsAndStatus(Long[] goodsIds, String status) {
+        Example example = new Example(TbItem.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("status",status);
+        List longs = Arrays.asList(goodsIds);
+        criteria.andIn("goodsId",longs);
+
+        List<TbItem> tbItems = tbItemMapper.selectByExample(example);
+        return tbItems;
+    }
+
 
 }

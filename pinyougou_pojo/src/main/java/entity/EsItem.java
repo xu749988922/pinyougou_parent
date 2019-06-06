@@ -6,6 +6,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import javax.persistence.Id;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Map;
 
 @Document(indexName = "pinyougou", type = "item")
@@ -43,6 +44,18 @@ public class EsItem implements Serializable{
         //嵌套域-用于存储规格
         @Field(index = true,type = FieldType.Nested)
         private Map<String,String> spec;
+        //更新时间
+        @Field(store = true, type = FieldType.Date)
+        private Date updateTime;
+
+        public Date getUpdateTime() {
+            return updateTime;
+        }
+
+        public void setUpdateTime(Date updateTime) {
+            this.updateTime = updateTime;
+        }
+
 
     @Override
     public String toString() {

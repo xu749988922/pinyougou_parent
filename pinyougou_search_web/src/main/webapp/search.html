@@ -84,7 +84,7 @@
 										<!--searchAutoComplete-->
 										<div class="input-append">
 											<input v-model="searchWord" type="text" id="autocomplete" type="text" class="input-error input-xxlarge" />
-											<button @click="searchMap.pageNo = 1;textSearch()" class="sui-btn btn-xlarge btn-danger" type="button">搜索</button>
+											<button @click="searchMap.pageNo = 1;textSearch();searchKeyword=searchWord" class="sui-btn btn-xlarge btn-danger" type="button">搜索</button>
 										</div>
 									</form>
 								</div>
@@ -181,7 +181,7 @@
 					</div>
 					<div class="fl ext"></div>
 				</div>
-				<div class="type-wrap logo" v-if ="searchMap.brand == ''">
+				<div class="type-wrap logo" v-if ="searchMap.brand == '' && !keywordsIsBrand()">
 					<div class="fl key brand">品牌</div>
 					<div class="value logos">
 						<ul class="logo-list">
@@ -301,19 +301,22 @@
 					<div class="navbar-inner filter">
 						<ul class="sui-nav">
 							<li class="active">
-								<a href="#">综合</a>
+								<a href="javascript:;"  @click="sortSearch('','')">综合</a>
 							</li>
 							<li>
 								<a href="#">销量</a>
 							</li>
 							<li>
-								<a href="#">新品</a>
+								<a @click="sortSearch('updateTime','desc')">新品</a>
 							</li>
 							<li>
 								<a href="#">评价</a>
 							</li>
 							<li>
-								<a href="#">价格</a>
+								<a @click="sortSearch('price','asc')">价格↑</a>
+							</li>
+							<li>
+								<a @click="sortSearch('price','desc')">价格↓</a>
 							</li>
 						</ul>
 					</div>

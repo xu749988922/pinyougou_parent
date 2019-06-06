@@ -3,6 +3,7 @@ window.onload=function (){
         el:"#app",
         data:{
             entity:{},
+            keyword:'',
             //所有的广告对象列表
             contentList:[]
         },
@@ -14,6 +15,9 @@ window.onload=function (){
                     // app.contentList[1]=resp.data
                     app.$set(app.contentList,1,resp.data)
                 })
+            },
+            search:function () {
+                window.location.href="http://localhost:8084?keyword="+this.keyword
             }
         },
         created:function () {

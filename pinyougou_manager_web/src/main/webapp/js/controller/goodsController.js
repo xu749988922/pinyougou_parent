@@ -108,7 +108,7 @@ window.onload=function () {
 		created:function () {
 			//调用用分页查询，初始化时从第1页开始查询
 			this.findPage(1);
-			this.findPage(1);
+			// this.findPage(1);
 			this.findItemCatName();
 		}
 	});

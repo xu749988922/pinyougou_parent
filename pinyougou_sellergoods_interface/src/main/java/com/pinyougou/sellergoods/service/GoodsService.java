@@ -1,6 +1,7 @@
 package com.pinyougou.sellergoods.service;
 
 import com.pinyougou.pojo.TbGoods;
+import com.pinyougou.pojo.TbItem;
 import com.pinyougou.pojogroup.Goods;
 import entity.PageResult;
 
@@ -56,4 +57,12 @@ public interface GoodsService {
     void updateStatus(Long[] ids,String auditStatus);
 
 	void isMarketableStatus(Long id);
+	/**
+	 * 跟据SPU-ID列表和状态，查询SKU列表
+	 * @param goodsIds
+	 * @param status
+	 * @return
+	 */
+	public List<TbItem> findItemListByGoodsIdsAndStatus(Long[] goodsIds, String status );
+
 }
